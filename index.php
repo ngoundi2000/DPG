@@ -1,4 +1,8 @@
- 
+<?php
+session_start();
+if( isset($_POST['log'])){}else
+$_SESSION['id']=0;
+?>
  
 <!DOCTYPE html>
 <html lang="en">
@@ -48,7 +52,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 								<span class="icon-bar"></span>
 							  </button>
 						<div class="navbar-brand logo ">
-							<h1><a href="index.html"> FCS500 Forum  </h1>
+							<h1><a href="index.html"> FCS500 Forum <i class="fa fa-balance-scale" aria-hidden="true"></i></a></h1>
 						</div>
 
 					</div>
@@ -287,7 +291,53 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 		<div class="container">
 			 
 			<div class="w3l-about-grids">
-				 
+				 <?php
+ mysql_connect('localhost','root','') or  die('cant connect database ');
+mysql_select_db("forumseries") or die('cannot select database');
+  if(isset($_POST['reg'])){
+   $username=$_POST['name'];
+
+   $email=$_POST['email'];
+
+   $password=$_POST['pass'];$n=$_POST['number'];
+   if(!empty($username)&&!empty($email)&&!empty($password)){
+    $sql=mysql_query("select * from users");
+	$e=0;
+    while ($row=mysql_fetch_array($sql)) {
+    $user=$row['username'];
+    $eml=$row['emial'];
+  if($user!=$username&&$eml!=$email){$e=$e+1;;
+  ECHO"insert into users(username,email,password,year)values('$username','$email','$password','$n')";
+    $sql2=mysql_query("insert into users(username,emial,password,year)values('$username','$email','$password','$n')");
+  }
+   } if($e==0){echo"<script>alert('FAILURE TO REGISTER EXISTING ACCOUNT')</script> ";   }
+else{header('location:forum.php');
+	exit();;   }
+   }else{
+    echo"All fields required";   }
+  
+}
+
+if(isset($_POST['log'])){
+  $username=$_POST['name'];
+  $password=$_POST['pass'];
+
+  $sql="select * from users where emial='".$username."' and password='".$password."' limit 1";
+  $res=mysql_query($sql) or die(mysql_error());
+  
+  if(mysql_num_rows($res)==1){      
+	
+	$row=mysql_fetch_assoc($res);
+	$_SESSION['id']=$row['id'];
+    $_SESSION['username']=$row['username'];
+	exit();;
+	header('location:forum.php');
+	 
+	}else{echo"<script>alert('  INEXISTING ACCOUNT')</script> "; 
+	 
+	}	
+	}
+  ?>
 				 
 			</div>
 		</div>
