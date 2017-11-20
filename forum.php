@@ -1,4 +1,78 @@
+
+ <?php
+session_start();
+function who($i){
+	
+	mysql_connect('localhost','root','') or  die('cant connect database ');
+mysql_select_db("forumseries") or die('cannot select database');
+
+  $sql="select * from users where id= ".$i." ";
+   
+  $res=mysql_query($sql) or die(mysql_error());
+   
+  if(mysql_num_rows($res)==1){      
+	
+	$row=mysql_fetch_assoc($res);
+	return $row['username'];
+	
+	 
+	}else{ 
+	return null;;
+	}	
+	
+}
+	
+if(isset($_POST['log'])){
+  $username=$_POST['name'];
+  $password=$_POST['pass'];
+  unset($_POST['log']);
+mysql_connect('localhost','root','') or  die('cant connect database ');
+mysql_select_db("forumseries") or die('cannot select database');
+
+  $sql="select * from users where emial='".$username."' and password='".$password."'";
+   
+  $res=mysql_query($sql) or die(mysql_error());
+   
+  if(mysql_num_rows($res)==1){      
+	
+	$row=mysql_fetch_assoc($res);
+	 
+	$_SESSION['id']=$row['id'];
+    $_SESSION['username']=$row['username'];
+	 
+	}else{ 
+	
+	header('location:/');
+	 exit();;
+	}	
+	}
+	
+if(isset($_POST['re'])){
+  $username=$_POST['to'];
+  $password=$_POST['x'];
+  unset($_POST );
+mysql_connect('localhost','root','') or  die('cant connect database ');
+mysql_select_db("forumseries") or die('cannot select database');
+$sq = "insert into post(topic_id,post_creator,post_content,post_date)values('$username',".$_SESSION['id'].",'$password',now())" ;
  
+
+ $sql2=mysql_query( $sq);
+echo "<script>alert('Comment saved')</script>"   ;
+ 	
+	}
+	if(isset($_POST['r'])){
+  $username=$_POST['Message'];
+ 
+  unset($_POST );
+mysql_connect('localhost','root','') or  die('cant connect database ');
+mysql_select_db("forumseries") or die('cannot select database');
+$sq = "insert into topics(topic_title,topic_creator ,topic_date)values('$username',".$_SESSION['id']." ,now())" ;
+    
+ $sql2=mysql_query( $sq);
+echo "<script>alert('Topic saved')</script>"   ;
+ 	
+	}
+  ?>
  
 <!DOCTYPE html>
 <html lang="en">
@@ -47,7 +121,7 @@
 								<span class="icon-bar"></span>
 							  </button>
 						<div class="navbar-brand logo ">
-							<h1><a href="index.php"> FCS500 Forum  </a></h1>
+							<h1><a href="index.html"> FCS500 Forum  </a></h1>
 						</div>
 
 					</div>
@@ -86,11 +160,113 @@
 		<div class="container">
 			<div id="wrapper">
 <h2>Recent Post</h2>
- 
+<?php
+ mysql_connect('localhost','root','') or  die('cant connect database ');
+mysql_select_db("forumseries") or die('cannot select database');
+if(!isset($_SESSION['id'])){
+
+    echo"Please login to reply the post.<a href='index.php'>Click Here To Login</a>";
+}else{
+echo"<p><font color='brown'>You are logged in as ". ($_SESSION['id'])." &bull;<a href='logout.php'>Logout</a></font></p> ";
+}
+?>
 <hr/>
 <div id="content">
  
+<?php
+ 	
+	if(isset($_POST['reg'])){
+		if(isset($_POST['reg']))
+  $username=$_POST['top'];
+else
+	$username="";
+  unset($_POST);
+mysql_connect('localhost','root','') or  die('cant connect database ');
+mysql_select_db("forumseries") or die('cannot select database');
+
+  $sql="select * from post where topic_id=".$username." ";
+   $temoin=0; 
+  $res=mysql_query($sql) or die(mysql_error());
+   $response=""; 
+	$response.="<table width='95%' border='0'>";
+	$response.="<tr style='background-color:#ABCDEF;' >
+	<td width='40%'> Responder</td>
+	<td width='60%'align='left'>response</td> </tr>";
+	 
+   while ($row=mysql_fetch_array($res)) {
+   
+      $response.="<tr>
+	<td> <b> ".who($row['post_creator'])." </b> <FONT COLOR='red'>On ".$row['post_date']."</font>  </td>
+	<td  align='left'>".$row['post_content']."</td>
+	 
+	</tr> <tr><td colspan='2'><hr/></td><tr>";;  
+	
+	  
+	$temoin=9;
+	 
+	}
+	if($temoin==0){echo"<script>alert('not response recorded')</script>";}else{ 
+	
+	 $response.="</table><br><br><br>";;echo $response ;
+	}	
+	}
+ mysql_connect('localhost','root','') or  die('cant connect database ');
+mysql_select_db("forumseries") or die('cannot select database');
+ 
   
+   if(isset($_SESSION[' id'])){
+      
+   $logged=" |<a  href=' '>click Here To Create New Topic</a>";
+
+   }else{   
+   $logged="  |Please Log in to create in this forum.";
+   }
+    {
+	$sql2="select * from topics   order by topic_date desc";
+	$res2=mysql_query($sql2) or die (mysql_error());
+	if(mysql_num_rows($res2)>0){
+	$topics="";
+	$topics.="<table width='100%' style='border-collapse:collapse;'>";
+	 
+	$topics.="<tr style='background-color:#dddddd;' >
+	<td> Topic Title</td>
+	<td width='65'align='center'> </td></tr>";
+	
+	while($row=mysql_fetch_assoc($res2)){
+	$replies=mysql_num_rows($res2);
+	$tid=$row['id'];
+	$title=$row['topic_title'];
+	$views=$row['topic_views'];
+	$date=$row['topic_date'];
+	$creator=$row['topic_creator'];
+	$topics.="<tr><td>
+	
+	
+	<table><tr><td width='40%'>
+	<a href=' '>".$title."</a><br/><span class='post_info'>
+	Posted by:".who($creator)." on<br/> ".$date."</span><form action='forum.php' method='post' name='".$tid."'>
+	<input type='hidden' name='top'value='".$tid."'>
+	<input type='submit' name='reg'value='see'>
+	</form>
+	</td><td >Your comment 	<form action='forum.php' method='post' name='2".$tid."'>
+	<input type='hidden' name='to'value='".$tid."'>
+	<textarea cols='50'name='x'></textarea>
+	<input type='submit' name='re'value='save'>
+	</form>
+	</td></tr></table>
+	</td><td align='center'> </td></tr>";
+$topics.="<tr><td colspan='3'><hr/></td></tr>";	
+}
+	$topics.="</table>";
+echo $topics;
+	
+	}else{
+	 
+   echo"<p>There is no topics   yet.".$logged."</p>";
+   } 
+
+   } 
+?>
 </div>
 </div>
 		</div>
@@ -142,7 +318,34 @@
 		<div class="container">
 			
 			<div class="w3l-about-grids">
-				 
+				 <?php
+ mysql_connect('localhost','root','') or  die('cant connect database ');
+mysql_select_db("forumseries") or die('cannot select database');
+  if(isset($_POST['reg'])){
+   $username=$_POST['name'];
+
+   $email=$_POST['email'];
+
+   $password=$_POST['pass'];$n=$_POST['number'];
+   if(!empty($username)&&!empty($email)&&!empty($password)){
+    $sql=mysql_query("select * from users");
+	$e=0;
+    while ($row=mysql_fetch_array($sql)) {
+    $user=$row['username'];
+    $eml=$row['emial'];
+  if($user!=$username&&$eml!=$email){$e=$e+1;;
+  ECHO"insert into users(username,email,password,year)values('$username','$email','$password','$n')";
+    $sql2=mysql_query("insert into users(username,emial,password,year)values('$username','$email','$password','$n')");
+  }
+   } if($e==0){echo"<script>alert('FAILURE TO REGISTER EXISTING ACCOUNT')</script> ";   }
+else{echo"<script>alert('SUCCESSFUL REGISTION CLICK ON LOGIN TO LOG')</script> ";   }
+   }else{
+    echo"All fields required";   }
+  
+}
+
+ 
+  ?>
 				 
 			</div>
 		</div>
