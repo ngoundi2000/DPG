@@ -243,7 +243,7 @@ mysql_select_db("forumseries") or die('cannot select database');
 	
 	
 	<table><tr><td width='40%'>
-	<a href=' '>".$title."</a><br/><span class='post_info'>
+	<a href=''>".$title."</a><br/><span class='post_info'>
 	Posted by:".who($creator)." on<br/> ".$date."</span><form action='forum.php' method='post' name='".$tid."'>
 	<input type='hidden' name='top'value='".$tid."'>
 	<input type='submit' name='reg'value='see'>
