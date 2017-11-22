@@ -52,7 +52,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 								<span class="icon-bar"></span>
 							  </button>
 						<div class="navbar-brand logo ">
-							<h1><a href="index.html"> FCS500 Forum <i class="fa fa-balance-scale" aria-hidden="true"></i></a></h1>
+							<h1><a href="index.html"> FCS500 Forum  </i></a></h1>
 						</div>
 
 					</div>
